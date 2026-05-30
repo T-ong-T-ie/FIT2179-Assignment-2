@@ -516,8 +516,19 @@
   vegaEmbed('#vis7', {
     "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
     "width": "container", "height": 340, "background": "transparent",
-    "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
-    "mark": {"type": "point", "filled": true, "opacity": 0.75},
+    "data": {
+      "url": "Dataset/malaysia_dengue_weather_derived.csv",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "Average_Temperature": "number",
+          "Average_Humidity": "number",
+          "Dengue_Cases": "number",
+          "Year": "number"
+        }
+      }
+    },
+    "mark": {"type": "point", "filled": true, "opacity": 0.85},
     "encoding": {
       "x": {
         "field": "Average_Temperature", "type": "quantitative", "scale": {"zero": false},
@@ -529,7 +540,8 @@
       },
       "size": {
         "field": "Dengue_Cases", "type": "quantitative", "title": "Outbreak Geometry Scale",
-        "scale": {"range": [60, 1300]},
+        // use a conservative range (area in pixels) to ensure circles are visible but not clipped
+        "scale": {"range": [30, 500]},
         "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
       },
       "color": {
@@ -544,7 +556,14 @@
         {"field": "Average_Humidity", "type": "quantitative", "title": "Humidity (%)"}
       ]
     }
-  }, embedOpts).catch(console.error);
+  }, embedOpts).catch(function (err) {
+    // Surface the error into the chart container when embedding fails in deployed environments
+    console.error(err);
+    var c = document.querySelector('#vis7');
+    if (c) {
+      c.innerHTML = '<div style="color:#ffb4b4;font-weight:600;padding:1rem;background:rgba(0,0,0,0.25);border-radius:4px;">Failed to render Idiom 07: ' + (err && err.message ? err.message : 'Unknown error') + '</div>';
+    }
+  });
 
   // ─── Idiom 08: Scatter + Regression (UV) ──────────────────────────────────
   vegaEmbed('#vis8', {
