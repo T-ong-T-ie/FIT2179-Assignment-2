@@ -601,27 +601,55 @@
       var SELANGOR_MAX = 80000;    // Full range for Selangor
       var OTHER_MAX = 20000;       // Restricted range for other states
 
-      // Function to update Y scale based on selected state
-      function updateScaleBasedOnSelection(selectedValue) {
-        var newDomain;
-
-        // Log for debugging
-        console.log('Legend_Highlight changed:', selectedValue);
-
-        if (selectedValue === null || selectedValue === undefined) {
-          // No selection - show all with Selangor's full range
-          newDomain = [0, SELANGOR_MAX];
-          console.log('No selection: using', newDomain);
-        } else if (selectedValue.State === 'Selangor') {
-          // Selangor selected - show its full range (0-80000)
-          newDomain = [0, SELANGOR_MAX];
-          console.log('Selangor selected: using', newDomain);
-        } else {
-          // Other states selected - restrict to 0-20000 for better detail
-          newDomain = [0, OTHER_MAX];
-          console.log('Other state selected (' + selectedValue.State + '): using', newDomain);
+      // Robust extractor for legend selection values (handles multiple signal shapes)
+      function extractSelectedStates(val) {
+        if (!val) return [];
+        if (typeof val === 'string') return [val];
+        if (Array.isArray(val)) {
+          return val.map(function(v) {
+            if (!v) return null;
+            if (typeof v === 'string') return v;
+            if (v.State) return v.State;
+            if (v.value) return v.value;
+            return null;
+          }).filter(Boolean);
         }
+        if (typeof val === 'object') {
+          // common shape: { State: "Selangor" }
+          if (val.State && typeof val.State === 'string') return [val.State];
+          // sometimes selection is nested: { value: "Selangor" } or { value: [{State: 'X'}] }
+          if (val.value) {
+            if (typeof val.value === 'string') return [val.value];
+            if (Array.isArray(val.value)) return val.value.map(function(v){ return (v && (v.State || v.value)) || null; }).filter(Boolean);
+          }
+          // fallback: collect string properties
+          var out = [];
+          Object.keys(val).forEach(function(k){
+            var v = val[k];
+            if (typeof v === 'string') out.push(v);
+            else if (v && typeof v.value === 'string') out.push(v.value);
+          });
+          return out.filter(Boolean);
+        }
+        return [];
+      }
 
+      // Function to update Y scale based on selected state(s)
+      function updateScaleBasedOnSelection(selectedValue) {
+        var selectedStates = extractSelectedStates(selectedValue);
+        console.log('Resolved selected states:', selectedStates);
+
+        var newDomain;
+        if (!selectedStates || selectedStates.length === 0) {
+          // No selection -> show full range including Selangor
+          newDomain = [0, SELANGOR_MAX];
+        } else if (selectedStates.indexOf('Selangor') !== -1) {
+          // Selangor is among selected -> show full Selangor range
+          newDomain = [0, SELANGOR_MAX];
+        } else {
+          // Only other states selected -> restrict to OTHER_MAX
+          newDomain = [0, OTHER_MAX];
+        }
         view.signal('Y_Scale_Domain', newDomain).run();
       }
 
@@ -630,7 +658,7 @@
 
       // Listen for changes to the Legend_Highlight parameter (Vega signal)
       view.addSignalListener('Legend_Highlight', function(name, value) {
-        updateScaleBasedOnSelection(value);
+        try { updateScaleBasedOnSelection(value); } catch (e) { console.error(e); }
       });
     }).catch(console.error);
 
