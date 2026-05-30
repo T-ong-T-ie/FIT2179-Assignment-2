@@ -21,7 +21,6 @@
       --ambient-gradient: radial-gradient(circle at 80% 20%, #111b2d 0%, #080c14 100%);
       --panel-glass: rgba(22, 31, 48, 0.75);
       --panel-border: rgba(255, 255, 255, 0.06);
-
       --color-text-bright: #ffffff;
       --color-text-read: #cfd8dc;
       --color-text-muted: #78909c;
@@ -161,7 +160,7 @@
   <div class="master-holder">
 
     <header class="project-manifesto">
-      <h1>Climate Dynamics & Epidemic Proliferation</h1>
+      <h1>Climate Dynamics &amp; Epidemic Proliferation</h1>
       <p style="font-size: 1.3rem; color: #b0bec5; max-width: 85ch; font-weight: 300;">
         A Critical Visual Evaluation of Environmental Controls Over Dengue Fever Trajectories Across Malaysian States (2014–2019).
       </p>
@@ -172,7 +171,7 @@
 
     <div class="narrative-block">
       <span class="section-index">Phase I</span>
-      <h2>Macro-Spatial Inundation & Baselines</h2>
+      <h2>Macro-Spatial Inundation &amp; Baselines</h2>
       <p style="max-width: 90ch; color: #b0bec5;">
         Dengue transmission patterns exhibit intense geo-spatial clustering. This opening analytical tier co-evaluates total historical registries against baseline environmental moisture matrices.
       </p>
@@ -207,7 +206,7 @@
 
     <div class="narrative-block" style="margin-top: 2.5rem;">
       <span class="section-index">Phase II</span>
-      <h2>State-Level Drift & Interactive Down-Sampling</h2>
+      <h2>State-Level Drift &amp; Interactive Down-Sampling</h2>
       <p style="max-width: 90ch; color: #b0bec5;">
         By transitioning from global maps to down-sampled rank indices, we isolate local structural anomalies. The integrated interactive selectors allow targeted filtering of individual observation years.
       </p>
@@ -242,7 +241,7 @@
 
     <div class="narrative-block" style="margin-top: 2.5rem;">
       <span class="section-index">Phase III</span>
-      <h2>High-Density Risk Modeling & Diagnostics</h2>
+      <h2>High-Density Risk Modeling &amp; Diagnostics</h2>
       <p style="max-width: 90ch; color: #b0bec5;">
         The terminal layer delivers critical details-on-demand. By projecting biological thresholds into multivariate spaces, we explicitly confirm the thermal-moisture vector intersection points.
       </p>
@@ -291,7 +290,7 @@
     <footer class="meta-footer">
       <div class="pure-g" style="padding:0; margin:0;">
         <div class="pure-u-1 pure-u-md-1-2" style="padding-left:0;">
-          <p style="font-weight: 500; color: var(--color-text-bright);">Primary Repositories & Data Attributions:</p>
+          <p style="font-weight: 500; color: var(--color-text-bright);">Primary Repositories &amp; Data Attributions:</p>
           <p style="font-size: 0.85rem;">Epidemiological case registries extracted from the OpenDengue Engine. Atmospheric metrics compiled from the Malaysia Meteorological Station Registry (Kaggle Sync).</p>
         </div>
         <div class="pure-u-1 pure-u-md-1-2" style="text-align: right; padding-right:0;">
@@ -304,6 +303,8 @@
   </div>
 
   <script type="text/javascript">
+
+    // ─── Theme ─────────────────────────────────────────────────────────────────
 
     const journalAcademicTheme = {
       font: 'Inter',
@@ -330,32 +331,302 @@
       view: { stroke: null }
     };
 
-    function mountChart(divId, jsonSpecPath) {
-      fetch(jsonSpecPath)
-        .then(response => response.json())
-        .then(spec => {
-          vegaEmbed('#' + divId, spec, {
-            actions: false,
-            renderer: 'svg',
-            config: journalAcademicTheme,
-            loader: {
-              baseURL: 'Dataset/'
-            }
-          });
-        })
-        .catch(console.error);
-    }
+    const embedOpts = { actions: false, renderer: 'svg', config: journalAcademicTheme };
 
-    mountChart('vis1', 'Dataset/idiom1_map_dengue.json');
-    mountChart('vis2', 'Dataset/idiom2_map_humidity.json');
-    mountChart('vis3', 'Dataset/idiom3_area_stacked.json');
-    mountChart('vis4', 'Dataset/idiom4_bar_ranked.json');
-    mountChart('vis5', 'Dataset/idiom5_line_layered.json');
-    mountChart('vis6', 'Dataset/idiom6_line_highlighter.json');
-    mountChart('vis7', 'Dataset/idiom7_bubble_core.json');
-    mountChart('vis8', 'Dataset/idiom8_scatter_uv.json');
-    mountChart('vis9', 'Dataset/idiom9_heatmap_matrix.json');
-    mountChart('vis10', 'Dataset/idiom10_bar_normalized.json');
+    // ─── Idiom 01: Map – Dengue Cases ──────────────────────────────────────────
+    vegaEmbed('#vis1', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 280, "background": "transparent",
+      "data": {
+        "url": "Dataset/malaysia-states.topojson",
+        "format": {"type": "topojson", "feature": "states"}
+      },
+      "transform": [{
+        "lookup": "properties.Name",
+        "from": {
+          "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+          "key": "State",
+          "fields": ["Dengue_Cases"]
+        }
+      }],
+      "projection": {"type": "mercator"},
+      "mark": {"type": "geoshape", "stroke": "rgba(255,255,255,0.1)", "strokeWidth": 0.8},
+      "encoding": {
+        "color": {
+          "field": "Dengue_Cases", "type": "quantitative", "title": "Total Cases",
+          "scale": {"scheme": "purplered"},
+          "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "tooltip": [
+          {"field": "properties.Name", "type": "nominal", "title": "State Territory"},
+          {"field": "Dengue_Cases", "type": "quantitative", "title": "Cases Registered", "format": ","}
+        ]
+      }
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 02: Map – Humidity ──────────────────────────────────────────────
+    vegaEmbed('#vis2', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 280, "background": "transparent",
+      "data": {
+        "url": "Dataset/malaysia-states.topojson",
+        "format": {"type": "topojson", "feature": "states"}
+      },
+      "transform": [{
+        "lookup": "properties.Name",
+        "from": {
+          "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+          "key": "State",
+          "fields": ["Average_Humidity"]
+        }
+      }],
+      "projection": {"type": "mercator"},
+      "mark": {"type": "geoshape", "stroke": "rgba(255,255,255,0.1)", "strokeWidth": 0.8},
+      "encoding": {
+        "color": {
+          "field": "Average_Humidity", "type": "quantitative", "title": "Humidity Baseline (%)",
+          "scale": {"scheme": "tealblues"},
+          "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "tooltip": [
+          {"field": "properties.Name", "type": "nominal", "title": "State Territory"},
+          {"field": "Average_Humidity", "type": "quantitative", "title": "Avg Humidity (%)", "format": ".2f"}
+        ]
+      }
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 03: Stacked Area ────────────────────────────────────────────────
+    vegaEmbed('#vis3', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 280, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "mark": {"type": "area", "opacity": 0.75, "line": {"color": "white", "strokeWidth": 0.5}},
+      "encoding": {
+        "x": {
+          "field": "Year", "type": "ordinal",
+          "sort": [2014,2015,2016,2017,2018,2019],
+          "axis": {"title": "Timeline", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "y": {
+          "field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "stack": "zero",
+          "axis": {"title": "National Aggregated Volume", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "color": {
+          "field": "State", "type": "nominal", "scale": {"scheme": "category20b"},
+          "legend": {"title": "State Geography", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "tooltip": [
+          {"field": "Year", "type": "ordinal"},
+          {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "title": "National Total", "format": ","}
+        ]
+      }
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 04: Ranked Bar ──────────────────────────────────────────────────
+    vegaEmbed('#vis4', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 280, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "params": [{
+        "name": "Year_Filter", "value": 2019,
+        "bind": {"input": "select", "options": [2014,2015,2016,2017,2018,2019], "name": "Observation Year: "}
+      }],
+      "transform": [{"filter": "datum.Year == Year_Filter"}],
+      "mark": {"type": "bar", "color": "#1B5E9B", "cornerRadiusEnd": 2},
+      "encoding": {
+        "y": {
+          "field": "State", "type": "nominal", "sort": "-x",
+          "axis": {"labelFont": "sans-serif", "title": null}
+        },
+        "x": {
+          "field": "Dengue_Cases", "type": "quantitative",
+          "axis": {"title": "Annual Case Volume", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "tooltip": [
+          {"field": "State", "type": "nominal"},
+          {"field": "Year", "type": "quantitative"},
+          {"field": "Dengue_Cases", "type": "quantitative", "title": "Cases Registered", "format": ","}
+        ]
+      }
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 05: Layered Line (Temp + Humidity, dual-axis) ───────────────────
+    vegaEmbed('#vis5', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 280, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "encoding": {
+        "x": {"field": "Year", "type": "ordinal", "axis": {"title": "Observation Period", "labelFont": "sans-serif", "titleFont": "Times New Roman"}}
+      },
+      "layer": [
+        {
+          "mark": {"type": "line", "color": "#26A69A", "strokeWidth": 2.5, "point": true},
+          "encoding": {
+            "y": {
+              "field": "Average_Humidity", "type": "quantitative", "aggregate": "mean",
+              "scale": {"zero": false},
+              "axis": {"title": "Mean Humidity (%)", "titleColor": "#26A69A", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+            }
+          }
+        },
+        {
+          "mark": {"type": "line", "color": "#FB8C00", "strokeWidth": 2.5, "point": {"color": "#FB8C00"}},
+          "encoding": {
+            "y": {
+              "field": "Average_Temperature", "type": "quantitative", "aggregate": "mean",
+              "scale": {"zero": false, "domain": [25, 29]},
+              "axis": {"title": "Mean Temperature (°C)", "titleColor": "#FB8C00", "labelFont": "sans-serif", "titleFont": "Times New Roman", "orient": "right"}
+            }
+          }
+        }
+      ],
+      "resolve": {"scale": {"y": "independent"}}
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 06: Highlight Multi-Line ───────────────────────────────────────
+    vegaEmbed('#vis6', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 280, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "params": [{
+        "name": "Legend_Highlight",
+        "select": {"type": "point", "fields": ["State"]},
+        "bind": "legend"
+      }],
+      "mark": {"type": "line", "point": true},
+      "encoding": {
+        "x": {"field": "Year", "type": "ordinal", "axis": {"title": "Year", "labelFont": "sans-serif"}},
+        "y": {"field": "Dengue_Cases", "type": "quantitative", "axis": {"title": "Annual Counts", "labelFont": "sans-serif", "titleFont": "Times New Roman"}},
+        "color": {
+          "field": "State", "type": "nominal", "scale": {"scheme": "tableau20"},
+          "legend": {"title": "Click Legend to Focus", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "opacity": {
+          "condition": {"param": "Legend_Highlight", "value": 1},
+          "value": 0.15
+        },
+        "strokeWidth": {
+          "condition": {"param": "Legend_Highlight", "value": 3.5},
+          "value": 1.2
+        }
+      }
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 07: Bubble Chart ────────────────────────────────────────────────
+    vegaEmbed('#vis7', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 340, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "transform": [{"filter": "datum.Average_Temperature != null && datum.Average_Humidity != null"}],
+      "mark": {"type": "point", "filled": true, "opacity": 0.75},
+      "encoding": {
+        "x": {
+          "field": "Average_Temperature", "type": "quantitative", "scale": {"zero": false},
+          "axis": {"title": "Thermal Index Context (°C)", "labelFont": "sans-serif", "titleFont": "Times New Roman", "grid": true}
+        },
+        "y": {
+          "field": "Average_Humidity", "type": "quantitative", "scale": {"zero": false},
+          "axis": {"title": "Moisture Coefficient Field (%)", "labelFont": "sans-serif", "titleFont": "Times New Roman", "grid": true}
+        },
+        "size": {
+          "field": "Dengue_Cases", "type": "quantitative", "title": "Outbreak Geometry Scale",
+          "scale": {"range": [60, 1300]},
+          "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "color": {
+          "field": "State", "type": "nominal", "scale": {"scheme": "category20b"},
+          "legend": {"title": "Territory Matrix", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "tooltip": [
+          {"field": "State", "type": "nominal"},
+          {"field": "Year", "type": "quantitative"},
+          {"field": "Dengue_Cases", "type": "quantitative", "title": "Cases Recorded", "format": ","},
+          {"field": "Average_Temperature", "type": "quantitative", "title": "Temp (°C)"},
+          {"field": "Average_Humidity", "type": "quantitative", "title": "Humidity (%)"}
+        ]
+      }
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 08: Scatter + Regression (UV) ──────────────────────────────────
+    vegaEmbed('#vis8', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 220, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "transform": [{"filter": "datum.Average_UV_Index != null"}],
+      "layer": [
+        {
+          "mark": {"type": "point", "color": "#FB8C00", "opacity": 0.6, "filled": true},
+          "encoding": {
+            "x": {"field": "Average_UV_Index", "type": "quantitative", "axis": {"title": "Solar UV Exposure Index", "labelFont": "sans-serif", "titleFont": "Times New Roman"}},
+            "y": {"field": "Dengue_Cases", "type": "quantitative", "axis": {"title": "Dengue Registry Counts", "labelFont": "sans-serif", "titleFont": "Times New Roman"}}
+          }
+        },
+        {
+          "mark": {"type": "line", "color": "#E53935", "strokeWidth": 2},
+          "transform": [{"regression": "Dengue_Cases", "on": "Average_UV_Index"}],
+          "encoding": {
+            "x": {"field": "Average_UV_Index", "type": "quantitative"},
+            "y": {"field": "Dengue_Cases", "type": "quantitative"}
+          }
+        }
+      ]
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 09: Heatmap ────────────────────────────────────────────────────
+    vegaEmbed('#vis9', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 220, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "mark": "rect",
+      "encoding": {
+        "x": {
+          "field": "Year", "type": "ordinal",
+          "axis": {"title": "Timeline Axis", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "y": {
+          "field": "State", "type": "nominal",
+          "axis": {"labelFont": "sans-serif", "title": null}
+        },
+        "color": {
+          "field": "Dengue_Cases", "type": "quantitative", "title": "Hazard Heat Index",
+          "scale": {"scheme": "purplered"},
+          "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "tooltip": [
+          {"field": "State", "type": "nominal"},
+          {"field": "Year", "type": "quantitative"},
+          {"field": "Dengue_Cases", "type": "quantitative", "title": "Registries", "format": ","}
+        ]
+      }
+    }, embedOpts).catch(console.error);
+
+    // ─── Idiom 10: Normalized Bar ─────────────────────────────────────────────
+    vegaEmbed('#vis10', {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": "container", "height": 220, "background": "transparent",
+      "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
+      "transform": [{
+        "calculate": "datum.Dengue_Cases > 5000 ? 'High Outbreak Alert' : 'Standard Baseline Fluctuations'",
+        "as": "Risk_Tier"
+      }],
+      "mark": "bar",
+      "encoding": {
+        "y": {
+          "field": "State", "type": "nominal", "sort": "-x",
+          "axis": {"labelFont": "sans-serif", "title": null}
+        },
+        "x": {
+          "field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "stack": "normalize",
+          "axis": {"title": "Proportion of Total Cases", "format": "%", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        },
+        "color": {
+          "field": "Risk_Tier", "type": "nominal",
+          "scale": {"domain": ["High Outbreak Alert","Standard Baseline Fluctuations"], "range": ["#E53935","#78909c"]},
+          "legend": {"title": "Categorical Hazard Condition", "orient": "bottom", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+        }
+      }
+    }, embedOpts).catch(console.error);
+
   </script>
 
 </body>
