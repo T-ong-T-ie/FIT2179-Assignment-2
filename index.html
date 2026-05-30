@@ -370,6 +370,8 @@
   };
 
   const embedOpts = { actions: false, renderer: 'svg', config: journalAcademicTheme };
+  // Shared transform to limit data to the validated observation window
+  const yearRangeFilter = [{ "filter": "datum.Year >= 2014 && datum.Year <= 2019" }];
 
   // ─── Idiom 01: Map – Dengue Cases ──────────────────────────────────────────
   vegaEmbed('#vis1', {
@@ -437,7 +439,7 @@
   vegaEmbed('#vis3', {
     "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
     "width": "container", "height": 320, "background": "transparent",
-    "data": {"url": "Data/malaysia_dengue_weather_derived.csv", "transform": yearRangeFilter},
+    "data": {"url": "Data/malaysia_dengue_weather_derived.csv", "format": {"type": "csv", "parse": {"Year": "number", "Average_Humidity": "number", "Dengue_Cases": "number"}}, "transform": yearRangeFilter},
     "layer": [
       {
         "mark": {"type": "line", "color": "#26A69A", "strokeWidth": 2.5, "point": true},
