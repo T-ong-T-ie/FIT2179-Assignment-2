@@ -17,20 +17,16 @@
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
   <style>
-    /* ── 独创的沉浸式高级感流行病学 UI 设计系统 ── */
     :root {
-      /* ➔ 核心背景改良：引入暗夜流体渐变色，杜绝单调 */
       --ambient-gradient: radial-gradient(circle at 80% 20%, #111b2d 0%, #080c14 100%);
-
-      /* ➔ 毛玻璃发光卡片底衬 */
       --panel-glass: rgba(22, 31, 48, 0.75);
       --panel-border: rgba(255, 255, 255, 0.06);
 
-      --color-text-bright: #ffffff;   /* 纯白强对比标题 */
-      --color-text-read: #cfd8dc;     /* 易读冰灰正文 */
-      --color-text-muted: #78909c;    /* 蓝灰辅助说明文 */
-      --accent-neon-red: #ff5252;    /* 骨痛热症流行病警示红 */
-      --accent-glow-teal: #00bfa5;   /* 环境湿度生态青 */
+      --color-text-bright: #ffffff;
+      --color-text-read: #cfd8dc;
+      --color-text-muted: #78909c;
+      --accent-neon-red: #ff5252;
+      --accent-glow-teal: #00bfa5;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,11 +37,10 @@
       font-size: 16px;
       line-height: 1.75;
       color: var(--color-text-read);
-      background: var(--ambient-gradient); /* 应用多层立体渐变背景 */
+      background: var(--ambient-gradient);
       background-attachment: fixed;
     }
 
-    /* 🚨 【硬性要求突破】：强制所有标题级别以及图表内标题使用 Times New Roman 衬线体 */
     h1, h2, h3, .editorial-title, .chart-display-title, .section-index {
       font-family: 'Times New Roman', Times, serif !important;
       font-weight: 700;
@@ -65,9 +60,8 @@
     p { margin-bottom: 1.2rem; font-weight: 300; }
     a { color: var(--accent-neon-red); text-decoration: none; }
 
-    /* ── 模块化大容量矩阵画布容器 ── */
     .master-holder {
-      max-width: 1400px; /* 进一步优化画布宽度，完美并排三栏，100%杜绝水平滚动条 */
+      max-width: 1400px;
       margin: 0 auto;
       padding: 0 2.5rem;
     }
@@ -93,7 +87,6 @@
       font-weight: bold;
     }
 
-    /* ➔ 核心重构：具有微发光的悬浮高质感卡片 */
     .grid-card {
       background: var(--panel-glass);
       border: 1px solid var(--panel-border);
@@ -128,8 +121,12 @@
     .canvas-container {
       width: 100%;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
+      display: block;
+    }
+
+    .canvas-container > div {
+      width: 100%;
+      min-width: 0;
     }
 
     .academic-footnote {
@@ -150,7 +147,6 @@
       color: var(--color-text-muted);
     }
 
-    /* 严密调校 Pure.css 的单元格间距，确保安全物理平铺 */
     .pure-g [class*="pure-u"] {
       padding: 0 1rem;
     }
@@ -309,25 +305,21 @@
 
   <script type="text/javascript">
 
-    /* 🚨 【极致调校：Vega-Lite 高阶暗色卡片引擎配置】
-       为了让图表完美融入全新的沉浸式彩色渐变网页中，
-       我们将图表背景设为透明（transparent），并将轴线、网格、标签和图例字体全部调高对比度，
-       同时穿透绑定 Times New Roman 字体到图表的主标题，完美通过高难度的 UX 审查！ */
     const journalAcademicTheme = {
       font: 'Inter',
-      background: 'transparent', // 强制透明以透出 HTML 的毛玻璃衬底
+      background: 'transparent',
       title: {
         font: 'Times New Roman',
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#ffffff', // 改变图表内主标题为高亮纯白
+        color: '#ffffff',
         anchor: 'start',
         offset: 12
       },
       axis: {
-        labelFont: 'Inter', labelFontSize: 10, labelColor: '#b0bec5', // 改变轴刻度为清晰的冰灰色
-        titleFont: 'Inter', titleFontSize: 11, titleColor: '#eceff1', titleFontWeight: 'bold', // 轴标题
-        gridColor: 'rgba(255,255,255,0.05)', // 将网格线弱化为卡片内部极淡的微光线
+        labelFont: 'Inter', labelFontSize: 10, labelColor: '#b0bec5',
+        titleFont: 'Inter', titleFontSize: 11, titleColor: '#eceff1', titleFontWeight: 'bold',
+        gridColor: 'rgba(255,255,255,0.05)',
         domainColor: 'rgba(255,255,255,0.15)',
         tickColor: 'rgba(255,255,255,0.15)'
       },
@@ -339,22 +331,21 @@
     };
 
     function mountChart(divId, jsonSpecPath) {
-      // 开启 vegaEmbed 并应用高级定制暗色主题
       vegaEmbed('#' + divId, jsonSpecPath, { actions: false, renderer: 'svg', config: journalAcademicTheme })
         .catch(console.error);
     }
 
     // ── 10大平铺图表集中渲染管道 ──
-    mountChart('vis1', 'idiom1_map_dengue.json');
-    mountChart('vis2', 'idiom2_map_humidity.json');
-    mountChart('vis3', 'idiom3_area_stacked.json');
-    mountChart('vis4', 'idiom4_bar_ranked.json');
-    mountChart('vis5', 'idiom5_line_layered.json');
-    mountChart('vis6', 'idiom6_line_highlighter.json');
-    mountChart('vis7', 'idiom7_bubble_core.json');
-    mountChart('vis8', 'idiom8_scatter_uv.json');
-    mountChart('vis9', 'idiom9_heatmap_matrix.json');
-    mountChart('vis10', 'idiom10_bar_normalized.json');
+    mountChart('vis1', 'Dataset/idiom1_map_dengue.json');
+    mountChart('vis2', 'Dataset/idiom2_map_humidity.json');
+    mountChart('vis3', 'Dataset/idiom3_area_stacked.json');
+    mountChart('vis4', 'Dataset/idiom4_bar_ranked.json');
+    mountChart('vis5', 'Dataset/idiom5_line_layered.json');
+    mountChart('vis6', 'Dataset/idiom6_line_highlighter.json');
+    mountChart('vis7', 'Dataset/idiom7_bubble_core.json');
+    mountChart('vis8', 'Dataset/idiom8_scatter_uv.json');
+    mountChart('vis9', 'Dataset/idiom9_heatmap_matrix.json');
+    mountChart('vis10', 'Dataset/idiom10_bar_normalized.json');
   </script>
 
 </body>

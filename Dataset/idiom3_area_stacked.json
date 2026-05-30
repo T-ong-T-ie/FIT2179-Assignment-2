@@ -1,0 +1,33 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 280,
+  "background": "transparent",
+  "data": {"url": "malaysia_dengue_weather_derived.csv"},
+  "mark": {"type": "area", "opacity": 0.75, "line": {"color": "white", "strokeWidth": 0.5}},
+  "encoding": {
+    "x": {
+      "field": "Year",
+      "type": "ordinal",
+      "sort": [2014, 2015, 2016, 2017, 2018, 2019],
+      "axis": {"title": "Timeline", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    },
+    "y": {
+      "field": "Dengue_Cases",
+      "type": "quantitative",
+      "aggregate": "sum",
+      "stack": "zero",
+      "axis": {"title": "National Aggregated Volume", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    },
+    "color": {
+      "field": "State",
+      "type": "nominal",
+      "scale": {"scheme": "category20b"},
+      "legend": {"title": "State Geography", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    },
+    "tooltip": [
+      {"field": "Year", "type": "ordinal"},
+      {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "title": "National Total", "format": ","}
+    ]
+  }
+}

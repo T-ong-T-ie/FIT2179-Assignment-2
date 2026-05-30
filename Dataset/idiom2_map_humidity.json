@@ -13,7 +13,7 @@
         "from": {
         "data": {"url": "malaysia_dengue_weather_derived.csv"},
         "key": "State",
-        "fields": ["Dengue_Cases"]
+        "fields": ["Average_Humidity"]
       }
     }
   ],
@@ -23,15 +23,15 @@
   "mark": {"type": "geoshape", "stroke": "rgba(255,255,255,0.1)", "strokeWidth": 0.8},
   "encoding": {
     "color": {
-      "field": "Dengue_Cases",
+      "field": "Average_Humidity",
       "type": "quantitative",
-      "title": "Total Cases",
-      "scale": {"scheme": "purplered"},
+      "title": "Humidity Baseline (%)",
+      "scale": {"scheme": "tealblues", "domain": [78, 86]},
       "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
     },
     "tooltip": [
       {"field": "properties.Name", "type": "nominal", "title": "State Territory"},
-      {"field": "Dengue_Cases", "type": "quantitative", "title": "Cases Registered", "format": ","}
+      {"field": "Average_Humidity", "type": "quantitative", "title": "Avg Humidity (%)", "format": ".2f"}
     ]
   }
 }

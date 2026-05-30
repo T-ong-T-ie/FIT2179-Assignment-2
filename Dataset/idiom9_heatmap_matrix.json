@@ -1,0 +1,32 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 220,
+  "background": "transparent",
+  "data": {"url": "malaysia_dengue_weather_derived.csv"},
+  "mark": "rect",
+  "encoding": {
+    "x": {
+      "field": "Year",
+      "type": "ordinal",
+      "axis": {"title": "Timeline Axis", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    },
+    "y": {
+      "field": "State",
+      "type": "nominal",
+      "axis": {"labelFont": "sans-serif", "title": null}
+    },
+    "color": {
+      "field": "Dengue_Cases",
+      "type": "quantitative",
+      "title": "Hazard Heat Index",
+      "scale": {"scheme": "purplered"},
+      "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    },
+    "tooltip": [
+      {"field": "State", "type": "nominal"},
+      {"field": "Year", "type": "quantitative"},
+      {"field": "Dengue_Cases", "type": "quantitative", "title": "Registries", "format": ","}
+    ]
+  }
+}

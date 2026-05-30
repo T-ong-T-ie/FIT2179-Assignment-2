@@ -1,0 +1,35 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 220,
+  "background": "transparent",
+  "data": {"url": "malaysia_dengue_weather_derived.csv"},
+  "transform": [
+    {
+      "calculate": "datum.Dengue_Cases > 5000 ? 'High Outbreak Alert' : 'Standard Baseline Fluctuations'",
+      "as": "Risk_Tier"
+    }
+  ],
+  "mark": "bar",
+  "encoding": {
+    "y": {
+      "field": "State",
+      "type": "nominal",
+      "sort": "-x",
+      "axis": {"labelFont": "sans-serif", "title": null}
+    },
+    "x": {
+      "field": "Dengue_Cases",
+      "type": "quantitative",
+      "aggregate": "sum",
+      "stack": "normalize",
+      "axis": {"title": "Proportion of Total Cases", "format": "%", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    },
+    "color": {
+      "field": "Risk_Tier",
+      "type": "nominal",
+      "scale": {"domain": ["High Outbreak Alert", "Standard Baseline Fluctuations"], "range": ["#E53935", "#78909c"]},
+      "legend": {"title": "Categorical Hazard Condition", "orient": "bottom", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    }
+  }
+}

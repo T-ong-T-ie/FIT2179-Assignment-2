@@ -1,0 +1,33 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 280,
+  "background": "transparent",
+  "data": {"url": "malaysia_dengue_weather_derived.csv"},
+  "params": [
+    {
+      "name": "Legend_Highlight",
+      "select": {"type": "point", "fields": ["State"]},
+      "bind": "legend"
+    }
+  ],
+  "mark": {"type": "line", "point": true},
+  "encoding": {
+    "x": {"field": "Year", "type": "ordinal", "axis": {"title": "Year", "labelFont": "sans-serif"}},
+    "y": {"field": "Dengue_Cases", "type": "quantitative", "axis": {"title": "Annual Counts", "labelFont": "sans-serif", "titleFont": "Times New Roman"}},
+    "color": {
+      "field": "State",
+      "type": "nominal",
+      "scale": {"scheme": "tableau20"},
+      "legend": {"title": "Click Legend to Focus", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    },
+    "opacity": {
+      "condition": {"param": "Legend_Highlight", "value": 1},
+      "value": 0.15
+    },
+    "strokeWidth": {
+      "condition": {"param": "Legend_Highlight", "value": 3.5},
+      "value": 1.2
+    }
+  }
+}
