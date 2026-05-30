@@ -222,8 +222,8 @@
 
     <div class="pure-u-1">
       <div class="grid-card">
-        <div class="chart-display-title">Idiom 03: Longitudinal Swell Volume</div>
-        <div class="chart-explanation">Longitudinal cumulative swell volume showing nationwide infection wave evolution over time.</div>
+        <div class="chart-display-title">Idiom 03: Humidity vs Dengue Cases (2014–2019)</div>
+        <div class="chart-explanation">Comparative line chart of mean annual humidity vs total dengue infections (2014–2019).</div>
         <div id="vis3" class="canvas-container"></div>
         <div class="academic-footnote">
           <strong>Longitudinal Wave Note:</strong> Note the dramatic national cresting observed towards 2019. While geographic hot spots remain structurally stable, the overarching nationwide surge indicates that temporal climate anomalies heavily modulate the global baseline magnitude of seasonal proliferation waves.
@@ -433,31 +433,36 @@
     }
   }, embedOpts).catch(console.error);
 
-  // ─── Idiom 03: Stacked Area ────────────────────────────────────────────────
+  // ─── Idiom 03: Comparative Line (Humidity vs Dengue Cases) ────────────────
   vegaEmbed('#vis3', {
     "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "width": "container", "height": 280, "background": "transparent",
-    "data": {"url": "Data/malaysia_dengue_weather_derived.csv"},
-    "mark": {"type": "area", "opacity": 0.75, "line": {"color": "white", "strokeWidth": 0.5}},
-    "encoding": {
-      "x": {
-        "field": "Year", "type": "ordinal",
-        "sort": [2014,2015,2016,2017,2018,2019],
-        "axis": {"title": "Timeline", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+    "width": "container", "height": 320, "background": "transparent",
+    "data": {"url": "Data/malaysia_dengue_weather_derived.csv", "transform": yearRangeFilter},
+    "layer": [
+      {
+        "mark": {"type": "line", "color": "#26A69A", "strokeWidth": 2.5, "point": true},
+        "encoding": {
+          "x": {"field": "Year", "type": "ordinal", "sort": [2014,2015,2016,2017,2018,2019], "axis": {"title": "Year", "labelFont": "sans-serif", "titleFont": "Times New Roman"}},
+          "y": {"field": "Average_Humidity", "type": "quantitative", "aggregate": "mean", "scale": {"zero": false}, "axis": {"title": "Mean Humidity (%)", "titleColor": "#26A69A", "labelFont": "sans-serif", "titleFont": "Times New Roman"}},
+          "tooltip": [
+            {"field": "Year", "type": "ordinal"},
+            {"field": "Average_Humidity", "type": "quantitative", "aggregate": "mean", "title": "Mean Humidity (%)", "format": ".2f"}
+          ]
+        }
       },
-      "y": {
-        "field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "stack": "zero",
-        "axis": {"title": "National Aggregated Volume", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
-      },
-      "color": {
-        "field": "State", "type": "nominal", "scale": {"scheme": "category20b"},
-        "legend": {"title": "State Geography", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
-      },
-      "tooltip": [
-        {"field": "Year", "type": "ordinal"},
-        {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "title": "National Total", "format": ","}
-      ]
-    }
+      {
+        "mark": {"type": "line", "color": "#7E57C2", "strokeWidth": 2.5, "point": {"color": "#7E57C2"}},
+        "encoding": {
+          "x": {"field": "Year", "type": "ordinal"},
+          "y": {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "scale": {"zero": true}, "axis": {"title": "Annual Dengue Cases", "titleColor": "#7E57C2", "labelFont": "sans-serif", "titleFont": "Times New Roman", "orient": "right"}},
+          "tooltip": [
+            {"field": "Year", "type": "ordinal"},
+            {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "title": "Total Cases", "format": ","}
+          ]
+        }
+      }
+    ],
+    "resolve": {"scale": {"y": "independent"}}
   }, embedOpts).catch(console.error);
 
   // ─── Idiom 04: Ranked Bar ──────────────────────────────────────────────────
