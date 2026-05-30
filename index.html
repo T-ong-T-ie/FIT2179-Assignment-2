@@ -331,11 +331,21 @@
     };
 
     function mountChart(divId, jsonSpecPath) {
-      vegaEmbed('#' + divId, jsonSpecPath, { actions: false, renderer: 'svg', config: journalAcademicTheme })
+      fetch(jsonSpecPath)
+        .then(response => response.json())
+        .then(spec => {
+          vegaEmbed('#' + divId, spec, {
+            actions: false,
+            renderer: 'svg',
+            config: journalAcademicTheme,
+            loader: {
+              baseURL: 'Dataset/'
+            }
+          });
+        })
         .catch(console.error);
     }
 
-    // ── 10大平铺图表集中渲染管道 ──
     mountChart('vis1', 'Dataset/idiom1_map_dengue.json');
     mountChart('vis2', 'Dataset/idiom2_map_humidity.json');
     mountChart('vis3', 'Dataset/idiom3_area_stacked.json');
