@@ -597,15 +597,41 @@
     }, embedOpts).then(function(result) {
       var view = result.view;
 
+      // Query the data source to find Selangor's maximum value
+      try {
+        var dataSource = view.data('source');  // Get the data table
+        var maxSelangor = 0;
+        var maxOther = 0;
+
+        if (dataSource && Array.isArray(dataSource)) {
+          dataSource.forEach(function(row) {
+            if (row.State === 'Selangor' && row.Dengue_Cases > maxSelangor) {
+              maxSelangor = row.Dengue_Cases;
+            } else if (row.State !== 'Selangor' && row.Dengue_Cases > maxOther) {
+              maxOther = row.Dengue_Cases;
+            }
+          });
+        }
+      } catch (e) {
+        console.log('Could not access data, using defaults');
+      }
+
+      // Use safe defaults: Selangor needs ~35000, others need 20000
+      var maxSelangorDomain = Math.max(maxSelangor, 35000);
+      var maxOtherDomain = 20000;
+
       // Function to update Y scale based on selected state
       function updateScaleBasedOnSelection(selectedValue) {
         var newDomain;
         if (selectedValue === null || selectedValue === undefined) {
-          newDomain = null;
+          // No selection - show all with a range that fits Selangor
+          newDomain = [0, maxSelangorDomain];
         } else if (selectedValue.State === 'Selangor') {
-          newDomain = null;
+          // Selangor selected - show its full range
+          newDomain = [0, maxSelangorDomain];
         } else {
-          newDomain = [0, 20000];
+          // Other states selected - restrict to 0-20000 for better detail
+          newDomain = [0, maxOtherDomain];
         }
         view.signal('Y_Scale_Domain', newDomain).run();
       }
