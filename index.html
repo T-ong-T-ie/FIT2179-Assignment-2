@@ -128,6 +128,32 @@
       min-width: 0;
     }
 
+    .aligned-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .aligned-row > [class*="pure-u"] {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .aligned-row .grid-card {
+      width: 100%;
+      height: 100%;
+    }
+
+    .aligned-row .canvas-container {
+      flex: none;
+    }
+
+    .aligned-row .aligned-full {
+      grid-column: 1 / -1;
+    }
+
     .academic-footnote {
       background: rgba(0, 0, 0, 0.3);
       border-left: 3px solid var(--accent-glow-teal);
@@ -165,7 +191,7 @@
       A Critical Visual Evaluation of Environmental Controls Over Dengue Fever Trajectories Across Malaysian States (2014–2019).
     </p>
     <p style="font-size: 0.82rem; color: var(--color-text-muted); margin-top: 2rem; text-transform: uppercase; letter-spacing: 0.1em;">
-      Investigator: [Your Name] &nbsp;&bull;&nbsp; Monash University Malaysia Portfolio &nbsp;&bull;&nbsp; May 2026
+      Investigator: HU LONGXI &nbsp;&bull;&nbsp; Monash University Malaysia &nbsp;&bull;&nbsp; May 2026
     </p>
   </header>
 
@@ -178,7 +204,7 @@
   </div>
 
   <div class="pure-g">
-    <div class="pure-u-1 pure-u-md-1-3">
+    <div class="pure-u-1 pure-u-md-1-2">
       <div class="grid-card">
         <div class="chart-display-title">Idiom 01: Cartographic Density of Cases</div>
         <div class="chart-explanation">Geospatial spread of cumulative registries via equal-area logic.</div>
@@ -186,7 +212,7 @@
       </div>
     </div>
 
-    <div class="pure-u-1 pure-u-md-1-3">
+    <div class="pure-u-1 pure-u-md-1-2">
       <div class="grid-card">
         <div class="chart-display-title">Idiom 02: Macro Baseline Moisture Map</div>
         <div class="chart-explanation">State-level spatial distribution of long-term mean humidity.</div>
@@ -194,7 +220,7 @@
       </div>
     </div>
 
-    <div class="pure-u-1 pure-u-md-1-3">
+    <div class="pure-u-1">
       <div class="grid-card">
         <div class="chart-display-title">Idiom 03: Longitudinal Swell Volume</div>
         <div class="chart-explanation">Stacked area profile of national case evolution timelines.</div>
@@ -212,8 +238,8 @@
     </p>
   </div>
 
-  <div class="pure-g">
-    <div class="pure-u-1 pure-u-md-1-3">
+  <div class="pure-g aligned-row">
+    <div class="pure-u-1 pure-u-md-1-2">
       <div class="grid-card">
         <div class="chart-display-title">Idiom 04: Ranked Disparities Array</div>
         <div class="chart-explanation">Horizontal tracking of cumulative state outbreak totals.</div>
@@ -221,7 +247,7 @@
       </div>
     </div>
 
-    <div class="pure-u-1 pure-u-md-1-3">
+    <div class="pure-u-1 pure-u-md-1-2">
       <div class="grid-card">
         <div class="chart-display-title">Idiom 05: Ambient Baseline Coupling</div>
         <div class="chart-explanation">Layered dual-axis lines tracking temperature and humidity patterns.</div>
@@ -229,7 +255,7 @@
       </div>
     </div>
 
-    <div class="pure-u-1 pure-u-md-1-3">
+    <div class="pure-u-1 aligned-full">
       <div class="grid-card">
         <div class="chart-display-title">Idiom 06: Highlight-Driven Trajectories</div>
         <div class="chart-explanation">Multi-line state array with interactive legend-focus filtering.</div>
