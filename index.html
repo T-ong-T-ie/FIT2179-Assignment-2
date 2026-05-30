@@ -601,9 +601,9 @@
       function updateScaleBasedOnSelection(selectedValue) {
         var newDomain;
         if (selectedValue === null || selectedValue === undefined) {
-          newDomain = null;
+          newDomain = [0, 80000];
         } else if (selectedValue.State === 'Selangor') {
-          newDomain = null;
+          newDomain = [0, 80000];
         } else {
           newDomain = [0, 20000];
         }
