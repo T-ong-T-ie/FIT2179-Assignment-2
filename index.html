@@ -517,7 +517,7 @@
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
       "width": "container", "height": 340, "background": "transparent",
       "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
-      "transform": [{"filter": "isValid(datum.Average_Temperature) && isValid(datum.Average_Humidity)"}],
+      "transform": [{"filter": "datum.Average_Temperature !== '' && datum.Average_Humidity !== ''"}],
       "mark": {"type": "point", "filled": true, "opacity": 0.75},
       "encoding": {
         "x": {
@@ -552,7 +552,7 @@
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
       "width": "container", "height": 220, "background": "transparent",
       "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
-      "transform": [{"filter": "isValid(datum.Average_UV_Index)"}],
+      "transform": [{"filter": "datum.Average_UV_Index !== ''"}],
       "layer": [
         {
           "mark": {"type": "point", "color": "#FB8C00", "opacity": 0.6, "filled": true},
