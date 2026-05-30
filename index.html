@@ -250,11 +250,11 @@
     <div class="pure-g">
       <div class="pure-u-1">
         <div class="grid-card">
-          <div class="chart-display-title">Idiom 07: The Epidemiology Triangle - Multidimensional Interaction Space</div>
-          <div class="chart-explanation">X: Temperature Axis | Y: Humidity Axis | Size: Case Outbreaks | Color: State Categorization</div>
+          <div class="chart-display-title">Idiom 07: Cumulative Outbreak Magnitude by Territory</div>
+          <div class="chart-explanation">Total registered dengue cases per state across all observation years, ranked by severity.</div>
           <div id="vis7" class="canvas-container"></div>
           <div class="academic-footnote">
-            <strong>Empirical Proof Notice:</strong> The prominent visual clustering of expanded bubble marks in the top-right quadrant empirically establishes a high-hazard atmospheric incubator grid where temperature and moisture act as synergistic catalysts.
+            <strong>Analytical Note:</strong> Selangor consistently dominates the outbreak registry, accounting for a disproportionate share of national cumulative cases — reflecting the compounding effects of high population density and urban heat island conditions.
           </div>
         </div>
       </div>
@@ -512,38 +512,47 @@
       }
     }, embedOpts).catch(console.error);
 
-    // ─── Idiom 07: Bubble Chart ────────────────────────────────────────────────
+    // ─── Idiom 07: Sorted Bar – Total Cases by State ──────────────────────────
     vegaEmbed('#vis7', {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
       "width": "container", "height": 340, "background": "transparent",
       "data": {"url": "Dataset/malaysia_dengue_weather_derived.csv"},
-      "mark": {"type": "point", "filled": true, "opacity": 0.75},
-      "encoding": {
-        "x": {
-          "field": "Average_Temperature", "type": "quantitative", "scale": {"zero": false},
-          "axis": {"title": "Thermal Index Context (°C)", "labelFont": "sans-serif", "titleFont": "Times New Roman", "grid": true}
+      "layer": [
+        {
+          "mark": {"type": "bar", "cornerRadiusEnd": 4},
+          "encoding": {
+            "y": {
+              "field": "State", "type": "nominal",
+              "sort": {"field": "Dengue_Cases", "op": "sum", "order": "descending"},
+              "axis": {"labelFont": "sans-serif", "title": null, "labelColor": "#cfd8dc", "labelFontSize": 11}
+            },
+            "x": {
+              "field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum",
+              "axis": {"title": "Total Cumulative Case Volume", "labelFont": "sans-serif", "titleFont": "Times New Roman", "format": ","}
+            },
+            "color": {
+              "field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum",
+              "scale": {"scheme": "purplered"},
+              "legend": {"title": "Total Cases", "labelFont": "sans-serif", "titleFont": "Times New Roman", "format": ","}
+            },
+            "tooltip": [
+              {"field": "State", "type": "nominal", "title": "State"},
+              {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "title": "Total Cases", "format": ","}
+            ]
+          }
         },
-        "y": {
-          "field": "Average_Humidity", "type": "quantitative", "scale": {"zero": false},
-          "axis": {"title": "Moisture Coefficient Field (%)", "labelFont": "sans-serif", "titleFont": "Times New Roman", "grid": true}
-        },
-        "size": {
-          "field": "Dengue_Cases", "type": "quantitative", "title": "Outbreak Geometry Scale",
-          "scale": {"range": [60, 1300]},
-          "legend": {"labelFont": "sans-serif", "titleFont": "Times New Roman"}
-        },
-        "color": {
-          "field": "State", "type": "nominal", "scale": {"scheme": "category20b"},
-          "legend": {"title": "Territory Matrix", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
-        },
-        "tooltip": [
-          {"field": "State", "type": "nominal"},
-          {"field": "Year", "type": "quantitative"},
-          {"field": "Dengue_Cases", "type": "quantitative", "title": "Cases Recorded", "format": ","},
-          {"field": "Average_Temperature", "type": "quantitative", "title": "Temp (°C)"},
-          {"field": "Average_Humidity", "type": "quantitative", "title": "Humidity (%)"}
-        ]
-      }
+        {
+          "mark": {"type": "text", "align": "left", "dx": 6, "fontSize": 10, "color": "#b0bec5"},
+          "encoding": {
+            "y": {
+              "field": "State", "type": "nominal",
+              "sort": {"field": "Dengue_Cases", "op": "sum", "order": "descending"}
+            },
+            "x": {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum"},
+            "text": {"field": "Dengue_Cases", "type": "quantitative", "aggregate": "sum", "format": ","}
+          }
+        }
+      ]
     }, embedOpts).catch(console.error);
 
     // ─── Idiom 08: Scatter + Regression (UV) ──────────────────────────────────
