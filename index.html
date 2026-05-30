@@ -624,7 +624,14 @@
         }
 
         console.log('Selection text:', asText, ' -> domain:', newDomain);
-        view.signal('Y_Scale_Domain', newDomain).run();
+        try {
+          view.signal('Y_Scale_Domain', newDomain);
+          // Use runAsync to avoid "Dataflow already running" errors
+          view.runAsync();
+        } catch (e) {
+          console.error('Failed to update Y_Scale_Domain synchronously, retrying with runAsync():', e);
+          try { view.runAsync(); } catch (e2) { console.error(e2); }
+        }
       }
 
       // Initialize and hook listener
