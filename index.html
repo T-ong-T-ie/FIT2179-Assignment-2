@@ -564,34 +564,60 @@
     "resolve": {"scale": {"y": "independent"}}
   }, embedOpts).catch(console.error);
 
-  // ─── Idiom 06: Highlight Multi-Line ───────────────────────────────────────
-  vegaEmbed('#vis6', {
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "width": "container", "height": 280, "background": "transparent",
-    "data": {"url": "Data/malaysia_dengue_weather_derived.csv"},
-    "params": [{
-      "name": "Legend_Highlight",
-      "select": {"type": "point", "fields": ["State"]},
-      "bind": "legend"
-    }],
-    "mark": {"type": "line", "point": true},
-    "encoding": {
-      "x": {"field": "Year", "type": "ordinal", "axis": {"title": "Year", "labelFont": "sans-serif"}},
-      "y": {"field": "Dengue_Cases", "type": "quantitative", "axis": {"title": "Annual Counts", "labelFont": "sans-serif", "titleFont": "Times New Roman"}},
-      "color": {
-        "field": "State", "type": "nominal", "scale": {"scheme": "tableau20"},
-        "legend": {"title": "Click Legend to Focus", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
-      },
-      "opacity": {
-        "condition": {"param": "Legend_Highlight", "value": 1},
-        "value": 0.15
-      },
-      "strokeWidth": {
-        "condition": {"param": "Legend_Highlight", "value": 3.5},
-        "value": 1.2
+   // ─── Idiom 06: Highlight Multi-Line ───────────────────────────────────────
+   vegaEmbed('#vis6', {
+     "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+     "width": "container", "height": 280, "background": "transparent",
+     "data": {"url": "Data/malaysia_dengue_weather_derived.csv"},
+     "params": [{
+       "name": "Legend_Highlight",
+       "select": {"type": "point", "fields": ["State"]},
+       "bind": "legend"
+     }, {
+       "name": "Y_Scale_Domain",
+       "value": null
+     }],
+     "mark": {"type": "line", "point": true},
+     "encoding": {
+       "x": {"field": "Year", "type": "ordinal", "axis": {"title": "Year", "labelFont": "sans-serif"}},
+       "y": {"field": "Dengue_Cases", "type": "quantitative", "scale": {"domain": {"param": "Y_Scale_Domain"}}, "axis": {"title": "Annual Counts", "labelFont": "sans-serif", "titleFont": "Times New Roman"}},
+       "color": {
+         "field": "State", "type": "nominal", "scale": {"scheme": "tableau20"},
+         "legend": {"title": "Click Legend to Focus", "labelFont": "sans-serif", "titleFont": "Times New Roman"}
+       },
+       "opacity": {
+         "condition": {"param": "Legend_Highlight", "value": 1},
+         "value": 0.15
+       },
+       "strokeWidth": {
+         "condition": {"param": "Legend_Highlight", "value": 3.5},
+         "value": 1.2
+       }
+     }
+    }, embedOpts).then(function(result) {
+      var view = result.view;
+
+      // Function to update Y scale based on selected state
+      function updateScaleBasedOnSelection(selectedValue) {
+        var newDomain;
+        if (selectedValue === null || selectedValue === undefined) {
+          newDomain = null;
+        } else if (selectedValue.State === 'Selangor') {
+          newDomain = null;
+        } else {
+          newDomain = [0, 20000];
+        }
+        view.signal('Y_Scale_Domain', newDomain).run();
       }
-    }
-  }, embedOpts).catch(console.error);
+
+      // Set initial scale
+      updateScaleBasedOnSelection(null);
+
+      // Listen for changes to the Legend_Highlight parameter (Vega signal)
+      view.addSignalListener('Legend_Highlight', function(name, value) {
+        updateScaleBasedOnSelection(value);
+      });
+    }).catch(console.error);
 
   // ─── Idiom 07: Bubble Chart ────────────────────────────────────────────────
   vegaEmbed('#vis7', {
