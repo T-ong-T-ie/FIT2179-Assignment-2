@@ -1,0 +1,49 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 300,
+  "data": {
+    "url": "malaysia-states.topojson",
+    "format": {
+      "type": "topojson",
+      "feature": "states"
+    }
+  },
+  "transform": [
+    {
+      "lookup": "properties.Name",
+      "from": {
+        "data": {
+          "url": "malaysia_dengue_weather_derived.csv"
+        },
+        "key": "State",
+        "fields": ["Dengue_Cases", "Average_Humidity"]
+      }
+    }
+  ],
+  "projection": {
+    "type": "cylindrical equal-area",
+    "parallel": 4.37,
+    "center": [109.6, 4.37]
+  },
+  "mark": {
+    "type": "geoshape",
+    "stroke": "#161f30",
+    "strokeWidth": 1
+  },
+  "encoding": {
+    "color": {
+      "field": "Dengue_Cases",
+      "type": "quantitative",
+      "title": "Registered Cases",
+      "scale": {
+        "scheme": "purplered"
+      }
+    },
+    "tooltip": [
+      { "field": "properties.Name", "type": "nominal", "title": "State/Territory" },
+      { "field": "Dengue_Cases", "type": "quantitative", "title": "Total Cases", "format": "," },
+      { "field": "Average_Humidity", "type": "quantitative", "title": "Avg Humidity (%)", "format": ".2f" }
+    ]
+  }
+}

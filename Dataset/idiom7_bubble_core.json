@@ -1,0 +1,46 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 400,
+  "data": {
+    "url": "malaysia_dengue_weather_derived.csv"
+  },
+  "mark": {
+    "type": "point",
+    "filled": true,
+    "opacity": 0.75
+  },
+  "encoding": {
+    "x": {
+      "field": "Average_Temperature",
+      "type": "quantitative",
+      "scale": { "zero": false },
+      "axis": { "title": "Thermal Index (°C)" }
+    },
+    "y": {
+      "field": "Average_Humidity",
+      "type": "quantitative",
+      "scale": { "zero": false },
+      "axis": { "title": "Moisture Coefficient (%)" }
+    },
+    "size": {
+      "field": "Dengue_Cases",
+      "type": "quantitative",
+      "title": "Outbreak Scale (Cases)",
+      "scale": { "range": [50, 1500] }
+    },
+    "color": {
+      "field": "State",
+      "type": "nominal",
+      "scale": { "scheme": "category20b" },
+      "legend": { "orient": "right", "title": "Geographic State" }
+    },
+    "tooltip": [
+      { "field": "State", "type": "nominal", "title": "State" },
+      { "field": "Year", "type": "quantitative", "title": "Year" },
+      { "field": "Dengue_Cases", "type": "quantitative", "title": "Cases Registered", "format": "," },
+      { "field": "Average_Temperature", "type": "quantitative", "title": "Avg Temp (°C)" },
+      { "field": "Average_Humidity", "type": "quantitative", "title": "Avg Humidity (%)" }
+    ]
+  }
+}

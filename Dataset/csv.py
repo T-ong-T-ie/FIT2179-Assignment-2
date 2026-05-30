@@ -1,79 +1,44 @@
 import pandas as pd
 
-# 1. 加载数据集
-try:
-    # 从 Excel 文件加载登革热数据
-    dengue_df = pd.read_excel('Dataset Denggi Malaysia.xlsx')
-    # 从 CSV 文件加载天气数据
-    weather_df = pd.read_csv('full_weather.csv')
-except FileNotFoundError as e:
-    print(f"错误：找不到数据文件 - {e}。请确保所有数据文件都在 'Dataset' 文件夹中。")
-    exit()
+# 1. 加载两个原始数据集
+# 请将文件名替换为你本地下载的实际文件名
+dengue_df = pd.read_csv('dengue_data_malaysia.csv')
+weather_df = pd.read_csv('weather_data_malaysia.csv')
 
-# 2. 预检并重命名列
-print("原始登革热数据列名:", dengue_df.columns)
-print("原始天气数据列名:", weather_df.columns)
+# 2. 预检：打印列名以确保我们能找到 Year, State, Cases, Rainfall 等字段
+print("骨痛热症列名:", dengue_df.columns)
+print("天气数据列名:", weather_df.columns)
 
-# 为了稳健性，我们尝试重命名登革热数据中可能存在的不同列名
-dengue_df.rename(columns={
-    'YEAR': 'Year',
-    'STATE': 'State',
-    'CASES': 'Cases'
-}, inplace=True, errors='ignore')
-
-# 检查必要的列是否存在
-required_dengue_cols = ['Year', 'State', 'Cases']
-if not all(col in dengue_df.columns for col in required_dengue_cols):
-    print(f"登革热数据缺少必要的列: {required_dengue_cols}。请检查 Excel 文件。")
-    exit()
-
-
-# 3. 处理登革热数据
-# 登革热数据可能是每周的，我们需要按年份和州进行汇总
-dengue_summary = dengue_df.groupby(['Year', 'State'])['Cases'].sum().reset_index()
-
-# 4. 处理天气数据
-# 将 'datetime' 列转换为日期时间对象，并提取年份
-weather_df['datetime'] = pd.to_datetime(weather_df['datetime'], errors='coerce')
-weather_df.dropna(subset=['datetime'], inplace=True) # 删除无法解析的日期行
-weather_df['Year'] = weather_df['datetime'].dt.year
-
-# 按年份和州聚合天气数据
-weather_summary = weather_df.groupby(['Year', 'state']).agg(
-    Yearly_Precipitation_Total=('precipitation_total', 'sum'),
-    Average_Temperature=('temperature', 'mean'),
-    Average_UV_Index=('uv_index', 'mean')
-).reset_index()
-weather_summary.rename(columns={'state': 'State'}, inplace=True)
-
-# 5. 标准化州名
-# 这是确保能成功合并的关键步骤
+# 3. 核心步骤：标准化“州属 (State)”名称，必须与 TopoJSON 完全对齐
+# 假设原始数据里有空格，或者把马六甲写成了 Malacca，把吉隆坡写成了 KL
 state_mapping = {
-    'W.P. Kuala Lumpur': 'Kuala Lumpur',
-    'W.P. Labuan': 'Labuan',
-    'W.P. Putrajaya': 'Putrajaya',
-    'Pulau Pinang': 'Penang',
-    'N. Sembilan': 'Negeri Sembilan'
-    # 在检查数据后，可根据需要添加更多映射
+    'Malacca': 'Melaka',
+    'Kuala Lumpur Territory': 'Kuala Lumpur',
+    'Penang Island': 'Penang',
+    'Pinang': 'Penang'
+    # 如果你在打印数据时发现其他拼写不一致，可以在这里继续添加映射
 }
 
-dengue_summary['State'] = dengue_summary['State'].str.strip().replace(state_mapping)
-weather_summary['State'] = weather_summary['State'].str.strip().replace(state_mapping)
+# 去除前后空格并替换拼写
+dengue_df['State'] = dengue_df['State'].astype(str).str.strip().replace(state_mapping)
+weather_df['State'] = weather_df['State'].astype(str).str.strip().replace(state_mapping)
 
-# 6. 合并数据集
-# 使用内部合并 (inner join) 来确保合并后的每一行在两个数据集中都有对应
-derived_data = pd.merge(dengue_summary, weather_summary, on=['Year', 'State'], how='inner')
+# 4. 聚合天气数据
+# 如果 Kaggle 的天气数据是“每天”或“每个气象站”的，数据量太大（会违反作业几兆字节的限制）
+# 我们需要将其按 [Year, State] 分组，计算年总降雨量和年平均气温
+weather_summary = weather_df.groupby(['Year', 'State']).agg({
+    'Rainfall': 'sum',          # 计算一年总降雨量
+    'Temperature': 'mean'       # 计算一年平均气温
+}).reset_index()
 
-# 7. 导出为 CSV
-output_filename = 'malaysia_dengue_weather_derived.csv'
-# 对浮点数进行四舍五入，使文件更整洁
-derived_data['Yearly_Precipitation_Total'] = derived_data['Yearly_Precipitation_Total'].round(2)
-derived_data['Average_Temperature'] = derived_data['Average_Temperature'].round(2)
-derived_data['Average_UV_Index'] = derived_data['Average_UV_Index'].round(2)
+# 5. 合并数据集 (Inner Join)
+# 这一步将通过 Year 和 State 两个共有键，把病例数和天气指标拼到同一行
+derived_data = pd.merge(dengue_df, weather_summary, on=['Year', 'State'], how='inner')
 
-derived_data.to_csv(output_filename, index=False)
-
-print(f"\n数据处理与合并完成，文件已保存为: {output_filename}")
-print("\n合并后数据预览:")
+# 6. 检查最终生成的数据样本
+print("\n成功合并后的派生数据预览:")
 print(derived_data.head())
-print("\n最终列名:", derived_data.columns.tolist())
+
+# 7. 导出为干净、轻量化的 CSV 文件供 Vega-Lite 读取
+derived_data.to_csv('malaysia_dengue_weather_derived.csv', index=False)
+print("\n文件已成功保存为：malaysia_dengue_weather_derived.csv")
